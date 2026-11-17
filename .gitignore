@@ -1,0 +1,10 @@
+# Derleme çıktıları
+/target/
+/dagitim/
+derleme_log.txt
+
+# kurulum.bat'ın indirdikleri
+/araclar/
+/ui/fonts/
+/lisanslar/
+/LISANS.txt

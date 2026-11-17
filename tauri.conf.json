@@ -1,0 +1,15 @@
+{
+  "productName": "Varak",
+  "version": "0.13.0",
+  "identifier": "tr.varak.masaustu",
+  "build": { "frontendDist": "ui" },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [{ "title": "Varak", "width": 1200, "height": 800, "dragDropEnabled": false }],
+    "security": {
+      "csp": null,
+      "assetProtocol": { "enable": true, "scope": ["$TEMP/varak/**"] }
+    }
+  },
+  "bundle": { "active": false, "icon": ["icons/icon.ico"] }
+}

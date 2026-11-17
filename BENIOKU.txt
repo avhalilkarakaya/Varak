@@ -1,0 +1,60 @@
+﻿VARAK
+=====
+
+Taranmış PDF ve görselleri (JPEG, PNG, TIFF, BMP, WebP) aranabilir, kopyalanabilir
+PDF'e çeviren; ayrıca PDF sayfalarını birleştiren, bölen, döndüren, kırpan ve
+sıkıştıran ücretsiz, açık kaynak bir masaüstü uygulamasıdır.
+Desteklenen diller: Türkçe, Osmanlıca (matbu), Arapça, İngilizce, Almanca ve karışık profiller.
+
+Tüm Hakkı Saklıdır. Halil KARAKAYA.
+Bu program GNU Affero Genel Kamu Lisansı sürüm 3 (AGPL-3.0) ile lisanslanmıştır ve
+hiçbir garanti olmaksızın dağıtılır. Lisansın tam metni: LISANS.txt
+
+
+GEREKSİNİMLER
+-------------
+- Windows 10 ya da 11, 64 bit.
+- Microsoft Edge WebView2 Runtime. Windows 11'de ve güncel Windows 10'da zaten
+  yüklüdür. Uygulama açılmazsa şu adresten yükleyin:
+  https://developer.microsoft.com/microsoft-edge/webview2/
+
+
+KULLANIM
+--------
+1. ZIP dosyasının içindeki "Varak" klasörünü istediğiniz bir yere çıkarın
+   (ör. Belgeler). ZIP'in içinden doğrudan çalıştırmayın.
+2. Varak klasöründeki Varak.exe'yi çalıştırın.
+3. İlk açılışta Windows "Windows bilgisayarınızı korudu" uyarısı gösterebilir.
+   Varak henüz dijital olarak imzalanmadığı için bu uyarı çıkar. Devam etmek için
+   "Ek bilgi" bağlantısına, ardından "Yine de çalıştır" düğmesine tıklayın.
+4. Dosyaları "Dosya ekle" düğmesiyle ekleyin. (Sürükleyip bırakma, dosyalarınızı
+   korumak için şimdilik kapalıdır.)
+
+OCR sonucu, kaynak dosyanın yanına "_varak" ekiyle kaydedilir (ör. eser_varak.pdf);
+metin ayrıca aynı adlı .txt dosyasına yazılır. Kaynak dosyanız değiştirilmez.
+
+
+GİZLİLİK
+--------
+Varak tamamen çevrim dışı çalışır. Varak'ın kendisi internete bağlanmaz ve hiçbir
+kullanım verisi toplamaz; dosyalarınız, okunan metinler ve ayarlarınız bilgisayarınızdan
+çıkmaz. (Arayüzü gösteren Windows bileşeni Microsoft Edge WebView2, Windows
+ayarlarınıza göre Microsoft ile güncelleme ve tanılama bağlantısı kurabilir.)
+
+
+KALDIRMA
+--------
+Varak kurulum gerektirmez. Kaldırmak için:
+1. Varak klasörünü silin.
+2. İsterseniz şu klasörleri de silin:
+   %LOCALAPPDATA%\tr.varak.masaustu   (ayarlar ve arayüz bileşeninin verileri)
+   %LOCALAPPDATA%\Varak               (düzeltme ekranının sakladığı veriler)
+   %TEMP%\varak                       (geçici dosyalar)
+   (Bu yolları Dosya Gezgini'nin adres çubuğuna yazarak açabilirsiniz.)
+
+
+KAYNAK KODU VE BİLEŞENLER
+-------------------------
+- Varak'ın kaynak kodu: "kaynak" klasörü.
+- Kullanılan bileşenler, lisansları ve kaynak kodlarının adresleri: UCUNCU_TARAF.txt
+- Bileşen lisans metinleri: "lisanslar" klasörü.

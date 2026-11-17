@@ -1,0 +1,40 @@
+﻿VARAK — ÜÇÜNCÜ TARAF BİLEŞENLERİ
+================================
+
+Varak aşağıdaki açık kaynak bileşenleri kullanır. Bileşenler değiştirilmeden
+dağıtılmıştır. Lisans metinleri "lisanslar" klasöründe ve LISANS.txt dosyasındadır.
+
+MuPDF (mutool) 1.28.0
+  Lisans: GNU AGPL-3.0 (LISANS.txt)
+  Telif: Artifex Software, Inc.
+  Bulunduğu yer: araclar\mupdf
+  Kaynak kodu: https://mupdf.com/downloads/archive/mupdf-1.28.0-source.tar.gz
+
+Ghostscript 10.07.1
+  Lisans: GNU AGPL-3.0 (LISANS.txt)
+  Telif: Artifex Software, Inc.
+  Bulunduğu yer: araclar\gs
+  Kaynak kodu: https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10071/ghostscript-10.07.1.tar.xz
+
+Tesseract OCR 5.5.3 (UB Mannheim Windows derlemesi)
+  Lisans: Apache License 2.0 (lisanslar\Tesseract-LICENSE.txt)
+  Bulunduğu yer: araclar\tesseract
+  Kaynak kodu: https://github.com/tesseract-ocr/tesseract
+  Windows derlemesi: https://github.com/UB-Mannheim/tesseract
+  Tesseract kurulumunun içerdiği diğer kütüphanelerin lisansları araclar\tesseract
+  klasöründe kendi dosyalarıyla birlikte yer alır.
+
+Tesseract dil modelleri (tur, ara, fas, eng, deu, osd)
+  Lisans: Apache License 2.0
+  Kaynak: https://github.com/tesseract-ocr/tessdata
+
+Yazı tipleri: Literata, Source Sans 3, Noto Naskh Arabic
+  Lisans: SIL Open Font License 1.1 (lisanslar\yazi-tipleri)
+  Kaynak: https://github.com/google/fonts
+
+Tauri ve diğer Rust kütüphaneleri
+  Lisanslar: çoğunlukla MIT ve/veya Apache 2.0
+  Kütüphane listesi ve lisans dosyaları: lisanslar\rust (KUTUPHANELER.txt)
+
+Microsoft Edge WebView2 Runtime
+  Windows'un bir parçasıdır; Varak ile dağıtılmaz.
