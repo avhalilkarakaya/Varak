@@ -51,9 +51,11 @@ if not exist araclar\gs\bin\gswin64c.exe (
 if not exist araclar\gs\bin\gswin64c.exe goto hata
 
 rem Lisans metinleri: AGPL-3.0 (Varak, MuPDF, Ghostscript) ve Apache-2.0 (Tesseract)
+rem AGPL metni depodaki LICENSE dosyasindan alinir; yoksa gnu.org'dan indirilir
+if not exist LISANS.txt if exist LICENSE copy /y LICENSE LISANS.txt >nul
 if not exist LISANS.txt (
   echo Lisans metinleri indiriliyor...
-  curl -fL -o LISANS.txt https://www.gnu.org/licenses/agpl-3.0.txt || goto hata
+  curl -fL --retry 3 -o LISANS.txt https://www.gnu.org/licenses/agpl-3.0.txt || goto hata
 )
 mkdir lisanslar 2>nul
 if not exist lisanslar\Tesseract-LICENSE.txt (

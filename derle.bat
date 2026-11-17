@@ -38,7 +38,7 @@ xcopy /i /y /q lisanslar\* %HEDEF%\lisanslar >nul
 rem Kaynak kodu (AGPL geregi programla birlikte verilir)
 rmdir /s /q %HEDEF%\kaynak 2>nul
 for %%d in (src ui capabilities icons lisanslar) do xcopy /e /i /y /q %%d %HEDEF%\kaynak\%%d >nul
-for %%f in (Cargo.toml Cargo.lock build.rs tauri.conf.json kurulum.bat derle.bat lisanslar.ps1 LISANS.txt BENIOKU.txt UCUNCU_TARAF.txt) do copy /y %%f %HEDEF%\kaynak\ >nul
+for %%f in (LICENSE Cargo.toml Cargo.lock build.rs tauri.conf.json kurulum.bat derle.bat lisanslar.ps1 LISANS.txt BENIOKU.txt UCUNCU_TARAF.txt) do copy /y %%f %HEDEF%\kaynak\ >nul
 
 echo ZIP hazirlaniyor...
 del /q dagitim\Varak-*.zip 2>nul
