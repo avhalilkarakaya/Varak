@@ -1,22 +1,19 @@
-# Geçici tanı: Ghostscript kurucusunu 7-Zip ile açıp kurulumsuz çalıştırmayı sınar
+# Geçici tanı: araçların Visual C++ çalışma zamanına bağımlılığı
 name: Tani
 on: workflow_dispatch
 jobs:
   tani:
     runs-on: windows-latest
     steps:
-      - name: Ghostscript'i 7-Zip ile çıkar
+      - name: Bağımlılıklar
         shell: pwsh
         run: |
           curl.exe -fsSL -o gs.exe https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10071/gs10071w64.exe
-          7z x gs.exe -oD:\gsx -y | Select-Object -Last 3
-          "=== Üst düzey:"
-          Get-ChildItem D:\gsx | Format-Table Name -AutoSize | Out-String
-          "=== gswin64c.exe nerede:"
-          Get-ChildItem D:\gsx -Recurse -Filter gswin64c.exe | ForEach-Object FullName
-          "=== Çalışıyor mu:"
-          $gs = Get-ChildItem D:\gsx -Recurse -Filter gswin64c.exe | Select-Object -First 1
-          & $gs.FullName -v
-          "=== PDF/A testi:"
-          & $gs.FullName -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -o D:\t.pdf -c "showpage"
-          "çıkış kodu: $LASTEXITCODE"; Get-Item D:\t.pdf | Format-Table Name, Length | Out-String
+          7z x gs.exe -oD:\gsx -y | Out-Null
+          curl.exe -fsSL -o mu.zip https://mupdf.com/downloads/archive/mupdf-1.28.0-windows.zip
+          7z x mu.zip -oD:\mu -y | Out-Null
+          $db = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -find "**\Hostx64\x64\dumpbin.exe" | Select-Object -First 1
+          foreach ($f in @('D:\gsx\bin\gswin64c.exe', 'D:\gsx\bin\gsdll64.dll') + (Get-ChildItem D:\mu -Recurse -Filter mutool.exe | ForEach-Object FullName)) {
+            "=== $f"
+            & $db /nologo /dependents $f | Select-String '\.dll' | ForEach-Object { $_.Line.Trim() }
+          }
