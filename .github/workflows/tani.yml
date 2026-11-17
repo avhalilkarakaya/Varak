@@ -1,23 +1,22 @@
-# Geçici tanı: Ghostscript kurucusunun GitHub'da neden beklediğini bulmak için
+# Geçici tanı: Ghostscript kurucusunu 7-Zip ile açıp kurulumsuz çalıştırmayı sınar
 name: Tani
 on: workflow_dispatch
 jobs:
   tani:
     runs-on: windows-latest
     steps:
-      - name: Ghostscript kurucusu
+      - name: Ghostscript'i 7-Zip ile çıkar
         shell: pwsh
         run: |
           curl.exe -fsSL -o gs.exe https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10071/gs10071w64.exe
-          $p = Start-Process .\gs.exe -ArgumentList '/S','/D=D:\gs' -PassThru
-          if (-not $p.WaitForExit(120000)) {
-            "=== 2 dakikada bitmedi. Pencereler:"
-            Get-Process | Where-Object { $_.MainWindowTitle } | Format-Table Id, ProcessName, MainWindowTitle -AutoSize | Out-String -Width 300
-            "=== Kurucu ve alt süreçleri:"
-            Get-CimInstance Win32_Process | Where-Object { $_.ParentProcessId -eq $p.Id -or $_.ProcessId -eq $p.Id } | Format-Table ProcessId, Name, CommandLine -AutoSize | Out-String -Width 300
-            Stop-Process -Id $p.Id -Force
-          } else { "Bitti, çıkış kodu: $($p.ExitCode)" }
-          "=== D:\gs içeriği:"
-          Get-ChildItem D:\gs -ErrorAction SilentlyContinue | Format-Table Name -AutoSize | Out-String
-          "=== 7-Zip ile içerik:"
-          7z l gs.exe | Select-Object -First 60
+          7z x gs.exe -oD:\gsx -y | Select-Object -Last 3
+          "=== Üst düzey:"
+          Get-ChildItem D:\gsx | Format-Table Name -AutoSize | Out-String
+          "=== gswin64c.exe nerede:"
+          Get-ChildItem D:\gsx -Recurse -Filter gswin64c.exe | ForEach-Object FullName
+          "=== Çalışıyor mu:"
+          $gs = Get-ChildItem D:\gsx -Recurse -Filter gswin64c.exe | Select-Object -First 1
+          & $gs.FullName -v
+          "=== PDF/A testi:"
+          & $gs.FullName -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -o D:\t.pdf -c "showpage"
+          "çıkış kodu: $LASTEXITCODE"; Get-Item D:\t.pdf | Format-Table Name, Length | Out-String
