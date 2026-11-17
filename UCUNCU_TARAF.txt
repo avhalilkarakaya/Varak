@@ -36,5 +36,9 @@ Tauri ve diğer Rust kütüphaneleri
   Lisanslar: çoğunlukla MIT ve/veya Apache 2.0
   Kütüphane listesi ve lisans dosyaları: lisanslar\rust (KUTUPHANELER.txt)
 
+Microsoft Visual C++ çalışma zamanı (vcruntime140.dll, vcruntime140_1.dll, msvcp140.dll)
+  Microsoft'un yeniden dağıtılabilir dosyalarıdır; Varak.exe, mutool ve Ghostscript'in
+  yanında, Microsoft Visual C++ yeniden dağıtım koşullarına göre bulunur.
+
 Microsoft Edge WebView2 Runtime
   Windows'un bir parçasıdır; Varak ile dağıtılmaz.

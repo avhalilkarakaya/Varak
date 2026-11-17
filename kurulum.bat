@@ -34,11 +34,19 @@ for %%L in (eng osd tur deu ara fas) do (
   )
 )
 
+rem Ghostscript kurucusu sessiz modda da pencere actigindan, 7-Zip varsa kurulmadan acilir
+set YEDIZIP=
+for %%z in (7z.exe) do if not "%%~$PATH:z"=="" set YEDIZIP=%%~$PATH:z
+if exist "%ProgramFiles%\7-Zip\7z.exe" set YEDIZIP=%ProgramFiles%\7-Zip\7z.exe
 if not exist araclar\gs\bin\gswin64c.exe (
   echo Ghostscript indiriliyor...
   curl -fL -o "%GECICI%\%GS%" https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10071/%GS% || goto hata
-  echo Windows izin isterse onaylayin.
-  start /wait "" "%GECICI%\%GS%" /S /D=%CD%\araclar\gs
+  if defined YEDIZIP (
+    "%YEDIZIP%" x "%GECICI%\%GS%" -oaraclar\gs -y -x!$PLUGINSDIR -x!uninstgs.exe.nsis -x!vcredist_x64.exe >nul || goto hata
+  ) else (
+    echo Ghostscript kurulum penceresi acilacak: "Install" ile devam edin. Windows izin isterse onaylayin.
+    start /wait "" "%GECICI%\%GS%" /S /D=%CD%\araclar\gs
+  )
 )
 if not exist araclar\gs\bin\gswin64c.exe goto hata
 

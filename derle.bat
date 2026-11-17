@@ -20,6 +20,15 @@ xcopy /e /i /y /q /d araclar %HEDEF%\araclar >nul
 copy /y target\release\varak.exe %HEDEF%\Varak.exe >nul
 for %%f in (LISANS.txt BENIOKU.txt UCUNCU_TARAF.txt) do copy /y %%f %HEDEF%\ >nul
 
+rem Microsoft Visual C++ calisma zamani: Varak.exe, mutool ve Ghostscript buna bagli.
+rem Yuklu olmayan bilgisayarlarda da calissin diye her birinin yanina konur.
+for %%f in (vcruntime140.dll vcruntime140_1.dll msvcp140.dll) do (
+  if not exist "%SystemRoot%\System32\%%f" (echo %%f bulunamadi: https://aka.ms/vs/17/release/vc_redist.x64.exe adresinden Visual C++ calisma zamanini kurun. & %BEKLE% & exit /b 1)
+  copy /y "%SystemRoot%\System32\%%f" %HEDEF%\ >nul
+  copy /y "%SystemRoot%\System32\%%f" %HEDEF%\araclar\mupdf\ >nul
+  copy /y "%SystemRoot%\System32\%%f" %HEDEF%\araclar\gs\bin\ >nul
+)
+
 echo Lisans dosyalari toplaniyor...
 rmdir /s /q %HEDEF%\lisanslar 2>nul
 powershell -NoProfile -ExecutionPolicy Bypass -File lisanslar.ps1 %HEDEF%\lisanslar\rust >> derleme_log.txt 2>&1 || (echo Lisans dosyalari toplanamadi. derleme_log.txt dosyasini bana gonderin. & %BEKLE% & exit /b 1)
