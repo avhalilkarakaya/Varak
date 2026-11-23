@@ -60,7 +60,7 @@
   .baslik-satir { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px; }
   .baslik-satir h1 { font-size: 25px; overflow-wrap: anywhere; }
   #canli { display: flex; flex-wrap: wrap; gap: 24px; padding: 22px; }
-  #canli figure { margin: 0; flex: 0 0 250px; display: flex; flex-direction: column; gap: 8px; }
+  #canli figure { margin: 0; flex: 1 1 340px; max-width: 460px; display: flex; flex-direction: column; gap: 8px; }
   #sonCerceve { position: relative; background: #fff; box-shadow: 0 1px 3px rgba(60, 45, 20, .18); min-height: 330px; }
   #sonCerceve img { display: block; width: 100%; }
   #sonKutular { position: absolute; inset: 0; }
@@ -89,9 +89,12 @@
 
   /* Düzeltme */
   #dzGovde { flex: 1; min-height: 0; display: flex; gap: 24px; padding: 20px 32px; }
-  #dzResim { flex: 1 1 380px; max-width: 520px; overflow: auto; }
-  #dzSatirlar { flex: 999 1 460px; min-width: 0; overflow: auto; display: flex; flex-direction: column; gap: 4px; }
-  #dzCerceve { position: relative; background: #fff; box-shadow: 0 1px 3px rgba(60, 45, 20, .18); }
+  #dzSol { flex: 6 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  #dzYakin { display: flex; align-items: center; gap: 6px; }
+  #dzYakin output { min-width: 52px; text-align: center; font-weight: 600; }
+  #dzResim { flex: 1; min-height: 0; overflow: auto; background: #e6dece; border-radius: 4px; padding: 10px; }
+  #dzSatirlar { flex: 5 1 380px; min-width: 0; overflow: auto; display: flex; flex-direction: column; gap: 4px; }
+  #dzCerceve { position: relative; background: #fff; box-shadow: 0 1px 3px rgba(60, 45, 20, .18); width: 100%; margin: 0 auto; }
   #dzImg { width: 100%; display: block; }
   #dzKutular { position: absolute; inset: 0; }
   .dzKutu { position: absolute; border: 1px solid rgba(31, 92, 90, .35); cursor: pointer; }
@@ -225,7 +228,15 @@
     </div>
   </div>
   <div id="dzGovde">
-    <div id="dzResim"><div id="dzCerceve"><img id="dzImg" alt="Taranmış sayfa"><div id="dzKutular"></div></div></div>
+    <div id="dzSol">
+      <div id="dzYakin" class="grup" role="group" aria-label="Yakınlaştırma">
+        <button class="ikon" aria-label="Uzaklaştır" title="Uzaklaştır (Ctrl + tekerlek)" onclick="dzYakinlas(-25)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+        <output id="dzOran" aria-live="polite">100%</output>
+        <button class="ikon" aria-label="Yakınlaştır" title="Yakınlaştır (Ctrl + tekerlek)" onclick="dzYakinlas(25)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg></button>
+        <button class="sade" onclick="dzYakinlas(0)">Genişliğe sığdır</button>
+      </div>
+      <div id="dzResim"><div id="dzCerceve"><img id="dzImg" alt="Taranmış sayfa"><div id="dzKutular"></div></div></div>
+    </div>
     <div id="dzSatirlar"></div>
   </div>
   <details id="dzKlavye" class="kart"><summary>Arap harfli klavye · Osmanlıca, Arapça, Farsça</summary><div id="dzTuslar"></div></details>
@@ -295,7 +306,7 @@
     </div>
     <aside id="hakkinda" aria-labelledby="bHakkinda">
       <h2 id="bHakkinda">Hakkında</h2>
-      <p class="surum">Varak <span style="font-size: 18px; font-weight: 400; color: var(--soluk)">0.13.0</span></p>
+      <p class="surum">Varak <span style="font-size: 18px; font-weight: 400; color: var(--soluk)">0.13.1</span></p>
       <p><b>Tüm Hakkı Saklıdır. Halil KARAKAYA.</b></p>
       <p>Bu program GNU Affero Genel Kamu Lisansı sürüm 3 (AGPL-3.0) ile lisanslanmıştır ve hiçbir garanti olmaksızın dağıtılır.</p>
       <dl>
@@ -724,6 +735,27 @@
   async function dzAktar() {
     try { bilgi(await invoke('egitim_aktar', { cikti: dz.cikti })); } catch (e) { bilgi('Hata: ' + e); }
   }
+  // Sayfa görüntüsünün yakınlaştırması: %100 = genişliğe sığar; düzey bu bilgisayarda hatırlanır
+  let dzOranDeger = 100;
+  try { dzOranDeger = Math.min(400, Math.max(100, +localStorage.getItem('varak.dzOran') || 100)); } catch (e) {}
+  function dzYakinlas(fark) {
+    dzOranDeger = fark ? Math.min(400, Math.max(100, dzOranDeger + fark)) : 100;
+    dzOranUygula();
+  }
+  function dzOranUygula() {
+    const etkin = document.querySelector('.dzKutu.etkin');
+    dzCerceve.style.width = dzOranDeger + '%';
+    dzOran.textContent = dzOranDeger + '%';
+    try { localStorage.setItem('varak.dzOran', dzOranDeger); } catch (e) {}
+    if (etkin) etkin.scrollIntoView({ block: 'center', inline: 'center' });
+  }
+  dzResim.addEventListener('wheel', e => {
+    if (!e.ctrlKey) return;
+    e.preventDefault();
+    dzYakinlas(e.deltaY < 0 ? 25 : -25);
+  }, { passive: false });
+  dzOranUygula();
+
   async function dzYukle() {
     bilgi('Sayfa hazırlanıyor...');
     let s;
@@ -775,7 +807,7 @@
       };
       metin.onblur = () => kaydet(false);
       onay.onchange = () => kaydet(false);
-      metin.onfocus = () => { sec(); kutu.scrollIntoView({ block: 'nearest' }); };
+      metin.onfocus = () => { sec(); kutu.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' }); };
       metin.onkeydown = e => {
         if (e.key !== 'Enter') return;
         e.preventDefault();

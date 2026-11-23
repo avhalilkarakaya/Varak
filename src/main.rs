@@ -449,7 +449,7 @@ fn sayfa_oku(kaynak: &Path, resim: bool, i: usize, is_k: &Path, dil: &str, yon: 
     }
     // Arayüzde son okunan sayfa olarak gösterilen küçük görüntü
     if let Ok(img) = image::open(&goruntu) {
-        let _ = img.thumbnail(420, 600).to_luma8().save(is_k.join(format!("on{}.jpg", i + 1)));
+        let _ = img.thumbnail(700, 1000).to_luma8().save(is_k.join(format!("on{}.jpg", i + 1)));
     }
     for uzanti in ["txt", "tsv"] {
         let y = yari.with_extension(uzanti);
@@ -1258,7 +1258,7 @@ async fn duzeltme_sayfa(cikti: String, k: usize) -> Result<serde_json::Value, St
         "-R".into(),
         is["donus"][i as usize].as_u64().unwrap_or(0).to_string().into(),
         "-w".into(),
-        "1000".into(),
+        "2000".into(), // yakınlaştırınca da harfler net görünsün
         "-o".into(),
         png.clone().into(),
         kaynak.into(),
