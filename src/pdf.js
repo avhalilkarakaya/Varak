@@ -242,7 +242,7 @@ function numaraSec(listeler) {
 			frekans[anahtar(n)] = (frekans[anahtar(n)] || 0) + 1;
 		});
 	});
-	return listeler.map(function (l) {
+	var ilk = listeler.map(function (l) {
 		var iyi = null;
 		l.forEach(function (n) {
 			var f = frekans[anahtar(n)];
@@ -250,6 +250,28 @@ function numaraSec(listeler) {
 			if (!iyi || f < iyi.f || (f === iyi.f && n.uzaklik < iyi.n.uzaklik)) iyi = { n: n, f: f };
 		});
 		return iyi ? iyi.n : null;
+	});
+	// Tutarlılık: sayfaların çoğunun uyduğu ortak fark (basılı numara - tarama sırası) bulunur.
+	// Belgenin numara aralığı dışındaki adaylar (künyedeki yıl, dipnot, madde numarası) elenir;
+	// kalanlardan beklenen değere en yakını seçilir. Aralık tarama sırasından bağımsızdır,
+	// bu yüzden karışık taranmış belgelerde de gerçek numaralar elenmez.
+	var sayac = {}, ortak = null, enCok = 1;
+	ilk.forEach(function (n, i) {
+		if (!n || n.roma) return;
+		var d = n.deger - i;
+		sayac[d] = (sayac[d] || 0) + 1;
+		if (sayac[d] > enCok) { enCok = sayac[d]; ortak = d; }
+	});
+	if (ortak === null) return ilk;
+	var alt = ortak - 10, ust = ortak + listeler.length + 10;
+	return listeler.map(function (l, i) {
+		if (ilk[i] && ilk[i].roma) return ilk[i];
+		var iyi = null;
+		l.forEach(function (n) {
+			if (n.roma || frekans[anahtar(n)] >= 3 || n.deger < alt || n.deger > ust) return;
+			if (!iyi || Math.abs(n.deger - i - ortak) < Math.abs(iyi.deger - i - ortak)) iyi = n;
+		});
+		return iyi;
 	});
 }
 
