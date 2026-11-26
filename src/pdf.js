@@ -58,7 +58,9 @@ function ocr(is) {
 	}
 	if (is.resim) {
 		var img = new Image(is.kaynak);
-		ox = 72 / (img.getXResolution() || 96); oy = 72 / (img.getYResolution() || 96);
+		// Küçük görüntüler OCR öncesi büyütülür; TSV koordinatları özgün boyuta indirgenir
+		var v0 = veriler[0], b = v0 && v0.W ? Math.max(img.getWidth(), img.getHeight()) / Math.max(v0.W, v0.H) : 1;
+		ox = b * 72 / (img.getXResolution() || 96); oy = b * 72 / (img.getYResolution() || 96);
 		resimEkle(doc, is.kaynak, false);
 	} else {
 		var harita = doc.newGraftMap();
@@ -100,7 +102,7 @@ function duzeltmeUygula(v, d) {
 		b.s = Math.max(b.s, k.x + k.w); b.a = Math.max(b.a, k.y + k.h);
 	});
 	yeni.forEach(function (k) { if (k.s !== undefined) { k.w = k.s - k.x; k.h = k.a - k.y; } });
-	return { H: v.H, kelimeler: yeni.filter(function (k) { return k.metin; }) };
+	return { W: v.W, H: v.H, kelimeler: yeni.filter(function (k) { return k.metin; }) };
 }
 
 // Arap harfleri Latin harflerinden çoksa paragraf sağdan sola yazılır
@@ -179,10 +181,10 @@ function numaralar(is) {
 }
 
 function tsvOku(tsv) {
-	var s = { H: 0, kelimeler: [] };
+	var s = { W: 0, H: 0, kelimeler: [] };
 	tsv.split("\n").forEach(function (r) {
 		var c = r.split("\t"), metin = (c[11] || "").trim();
-		if (c[0] === "1") s.H = +c[9];
+		if (c[0] === "1") { s.W = +c[8]; s.H = +c[9]; }
 		if (c[0] !== "5" || !metin) return;
 		s.kelimeler.push({ x: +c[6], y: +c[7], w: +c[8], h: +c[9], guven: +c[10], satir: c[2] + "." + c[3] + "." + c[4], metin: metin });
 	});

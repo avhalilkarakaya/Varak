@@ -399,6 +399,12 @@ fn sayfa_oku(kaynak: &Path, resim: bool, i: usize, is_k: &Path, dil: &str, yon: 
         ])?;
         png
     };
+    if resim {
+        if let Some(b) = buyut(&goruntu, &is_k.join(format!("b{}.png", i + 1)))? {
+            goruntu = b;
+            gecici_goruntu = true;
+        }
+    }
     // Ters ya da yan duran sayfa: OCR görüntüsü döndürülür, açı rN dosyasına yazılır
     // (PDF'teki sayfa da aynı açıyla döndürülecek)
     if yon {
@@ -461,6 +467,21 @@ fn sayfa_oku(kaynak: &Path, resim: bool, i: usize, is_k: &Path, dil: &str, yon: 
         let _ = std::fs::remove_file(goruntu);
     }
     Ok(())
+}
+
+/// Düşük çözünürlüklü sayfa görüntüsünü (uzun kenar < 1600 px) uzun kenarı 2200 px olacak şekilde
+/// (en çok 3 kat) büyütür; satır şeridi gibi dar görüntülere dokunmaz.
+/// Ölçüm (KITAB-Bench Hindawi, 612×792 px): Arapça CER %31,4 → %10,9.
+fn buyut(yol: &Path, hedef: &Path) -> Result<Option<PathBuf>, String> {
+    let (w, h) = image::image_dimensions(yol).map_err(hata)?;
+    if w.max(h) >= 1600 || w.min(h) < 400 {
+        return Ok(None);
+    }
+    let k = (2200.0 / w.max(h) as f32).min(3.0);
+    let img = image::open(yol).map_err(hata)?.to_luma8();
+    let (yw, yh) = ((w as f32 * k) as u32, (h as f32 * k) as u32);
+    image::imageops::resize(&img, yw, yh, image::imageops::FilterType::Lanczos3).save(hedef).map_err(hata)?;
+    Ok(Some(hedef.to_path_buf()))
 }
 
 /// Kelimenin yazı sistemi: Some(true) Arap harfli, Some(false) Latin harfli, None belirsiz (ör. sayı)
