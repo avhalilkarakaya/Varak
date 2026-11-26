@@ -469,19 +469,43 @@ fn sayfa_oku(kaynak: &Path, resim: bool, i: usize, is_k: &Path, dil: &str, yon: 
     Ok(())
 }
 
-/// Düşük çözünürlüklü sayfa görüntüsünü (uzun kenar < 1600 px) uzun kenarı 2200 px olacak şekilde
-/// (en çok 3 kat) büyütür; satır şeridi gibi dar görüntülere dokunmaz.
-/// Ölçüm (KITAB-Bench Hindawi, 612×792 px, 60 sayfa): Arapça CER %30,7 → %11,1 (Lanczos: %12,8).
+/// Yazısı küçük kalan düşük çözünürlüklü sayfa görüntüsünü (uzun kenar < 1600 px, satır yüksekliği
+/// < 25 px) uzun kenarı 2200 px olacak şekilde (en çok 3 kat) büyütür; satır şeridi gibi dar görüntülere dokunmaz.
+/// Ölçüm: KITAB-Bench Hindawi (612×792 px, satır ~16 px) Arapça CER %30,7 → %11,1. Yazısı zaten
+/// yeterince büyük sayfalarda (osmanlica.com matbu nesih, satır ~40 px) büyütme CER'i %24,3 → %25,4 kötüleştirdiği
+/// için satır yüksekliği şartı vardır.
 fn buyut(yol: &Path, hedef: &Path) -> Result<Option<PathBuf>, String> {
     let (w, h) = image::image_dimensions(yol).map_err(hata)?;
     if w.max(h) >= 1600 || w.min(h) < 400 {
         return Ok(None);
     }
-    let k = (2200.0 / w.max(h) as f32).min(3.0);
     let img = image::open(yol).map_err(hata)?.to_luma8();
+    if !(1..25).contains(&satir_yuksekligi(&img)) {
+        return Ok(None);
+    }
+    let k = (2200.0 / w.max(h) as f32).min(3.0);
     let (yw, yh) = ((w as f32 * k) as u32, (h as f32 * k) as u32);
     image::imageops::resize(&img, yw, yh, image::imageops::FilterType::Triangle).save(hedef).map_err(hata)?;
     Ok(Some(hedef.to_path_buf()))
+}
+
+/// Metin satırlarının ortanca yüksekliği (px): yatay izdüşümde koyu piksel içeren ardışık satır kümeleri
+fn satir_yuksekligi(img: &image::GrayImage) -> u32 {
+    let ort = img.as_raw().iter().map(|&p| p as u64).sum::<u64>() / (img.as_raw().len() as u64).max(1);
+    let (esik, sinir) = ((ort * 3 / 4) as u8, (img.width() / 200).max(2) as usize);
+    let (mut kosular, mut n) = (Vec::new(), 0);
+    for satir in img.rows().map(Some).chain([None]) {
+        if satir.is_some_and(|s| s.filter(|p| p.0[0] < esik).count() > sinir) {
+            n += 1;
+        } else {
+            if n >= 4 {
+                kosular.push(n);
+            }
+            n = 0;
+        }
+    }
+    kosular.sort_unstable();
+    kosular.get(kosular.len() / 2).copied().unwrap_or(0)
 }
 
 /// Kelimenin yazı sistemi: Some(true) Arap harfli, Some(false) Latin harfli, None belirsiz (ör. sayı)
