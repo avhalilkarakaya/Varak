@@ -441,7 +441,7 @@ fn sayfa_oku(kaynak: &Path, resim: bool, i: usize, is_k: &Path, dil: &str, yon: 
             goruntu.clone().into(),
             yari.clone().into(),
             "-l".into(),
-            dil.into(),
+            tesseract_dili(dil).into(),
             "--tessdata-dir".into(),
             t.join("tessdata").into(),
             "tsv".into(),
@@ -467,6 +467,17 @@ fn sayfa_oku(kaynak: &Path, resim: bool, i: usize, is_k: &Path, dil: &str, yon: 
         let _ = std::fs::remove_file(goruntu);
     }
     Ok(())
+}
+
+/// Osmanlıca profillerinde Arapça için "best", Farsça için "fast" model kullanılır.
+/// Ölçüm (osmanlica.com matbu nesih, 19 sayfa): CER %24,3 → %21,4, süre +%22
+/// (ikisi de "best" olsaydı %21,0, süre +%50). Arapça profili standart modelde kalır.
+fn tesseract_dili(dil: &str) -> String {
+    if dil.contains("fas") {
+        dil.replace("ara", "ara_best").replace("fas", "fas_fast")
+    } else {
+        dil.to_string()
+    }
 }
 
 /// Yazısı küçük kalan düşük çözünürlüklü sayfa görüntüsünü (uzun kenar < 1600 px, satır yüksekliği
@@ -528,7 +539,7 @@ fn arap_harfli(s: &str) -> Option<bool> {
 /// Değişiklik olursa yeni TSV'yi döndürür.
 fn karisik_ikinci_okuma(tsv: &str, goruntu: &Path, is_k: &Path, i: usize, dil: &str, t: &Path) -> Result<Option<String>, String> {
     let latin_mi = |d: &&str| matches!(*d, "tur" | "eng" | "deu");
-    let arap_dili = dil.split('+').filter(|d| !latin_mi(d)).collect::<Vec<_>>().join("+");
+    let arap_dili = tesseract_dili(&dil.split('+').filter(|d| !latin_mi(d)).collect::<Vec<_>>().join("+"));
     let latin_dili = dil.split('+').filter(latin_mi).collect::<Vec<_>>().join("+");
     if arap_dili.is_empty() || latin_dili.is_empty() {
         return Ok(None);

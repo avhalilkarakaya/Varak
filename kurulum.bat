@@ -27,11 +27,20 @@ if not exist araclar\tesseract\tesseract.exe (
 )
 if not exist araclar\tesseract\tesseract.exe goto hata
 
-for %%L in (eng osd tur deu ara fas) do (
+for %%L in (eng osd tur deu ara) do (
   if not exist araclar\tesseract\tessdata\%%L.traineddata (
     echo %%L dil modeli indiriliyor...
     curl -fL -o araclar\tesseract\tessdata\%%L.traineddata %TESSDATA%/%%L.traineddata || goto hata
   )
+)
+rem Osmanlica profili: Arapca "best", Farsca "fast" model (olcumle secildi)
+if not exist araclar\tesseract\tessdata\ara_best.traineddata (
+  echo ara_best dil modeli indiriliyor...
+  curl -fL -o araclar\tesseract\tessdata\ara_best.traineddata https://github.com/tesseract-ocr/tessdata_best/raw/main/ara.traineddata || goto hata
+)
+if not exist araclar\tesseract\tessdata\fas_fast.traineddata (
+  echo fas_fast dil modeli indiriliyor...
+  curl -fL -o araclar\tesseract\tessdata\fas_fast.traineddata https://github.com/tesseract-ocr/tessdata_fast/raw/main/fas.traineddata || goto hata
 )
 
 rem Ghostscript kurucusu sessiz modda da pencere actigindan, 7-Zip varsa kurulmadan acilir
